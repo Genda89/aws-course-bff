@@ -28,6 +28,8 @@ functions:
       - httpApi:
           path: /products
           method: get
+          cors:
+            origin: '*'
           responseData:
             200:
               description: Successful response
