@@ -1,0 +1,16 @@
+[
+  {
+    "id": "mock001",
+    "title": "The Lord of the Ring",
+    "description": "The Lord of the Rings is an epic high-fantasy novel by the English author and scholar J. R. R. Tolkien. Set in Middle-earth, the story began as a sequel to Tolkiens 1937 children book The Hobbit, but eventually developed into a much larger work.",
+    "price": 10,
+    "count": 5
+  },
+  {
+    "id": "mock002",
+    "title": "Hobbit",
+    "description": "A reluctant Hobbit, Bilbo Baggins, sets out to the Lonely Mountain with a spirited group of dwarves to reclaim their mountain home, and the gold within it from the dragon Smaug.",
+    "price": 10,
+    "count": 8
+  }
+]

@@ -1,22 +1,25 @@
 {
-    "compilerOptions": {
-      "target": "es2020",
-      "module": "es2020",
-      "moduleResolution": "node",
-      "baseUrl": "./",
-      "paths": {
-        "@interfaces/*": ["types/*"],
-        "@functions": ["handlers/index.ts"],
-        "@functions/*": ["handlers/*"],
-        "@mocks/*": ["mocks/*"],
-        "custom-module-type": ["types/custom-module-type"]
-      },
-      "resolveJsonModule": true,
-      "esModuleInterop": true,
-      "forceConsistentCasingInFileNames": true,
-      "strict": true,
-      "skipLibCheck": true,
-      "noImplicitAny": true,
-      "allowJs": false
-    },"ts-node": {"files":true}
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": ["es2020"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "@interfaces/*": ["types/*"],
+      "@functions": ["handlers/index.ts"],
+      "@functions/*": ["handlers/*"],
+      "@mocks/*": ["database/mocks/*"],
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "allowJs": false
+  },
+  "ts-node": {
+    "esm": true
+}
 }

@@ -94,18 +94,13 @@
         "price": {
           "title": "Product.price",
           "type": "number"
-        },
-        "count": {
-          "title": "Product.count",
-          "type": "number"
         }
       },
       "required": [
         "id",
         "title",
         "description",
-        "price",
-        "count"
+        "price"
       ],
       "additionalProperties": false,
       "title": "Product",

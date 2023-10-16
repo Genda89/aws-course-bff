@@ -7,6 +7,15 @@ provider:
   region: eu-west-1
   httpApi:
     cors: true
+  enviroment:
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: '*'
 
 plugins:
   - serverless-auto-swagger
@@ -20,6 +29,18 @@ custom:
     includeModules: true
   autoswagger:
     typefiles: ['./types/product.types.ts', './types/api.types.ts']
+  ProductsTable: products
+  StocksTable: stocks
+
+Resources:
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.ProductsTable}
+  StocksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.StocksTable}
 
 functions:
   getProductsList:
@@ -53,3 +74,4 @@ functions:
             500:
               description: Something went wrong
               bodyType: ErrorResponse
+        createProduct:

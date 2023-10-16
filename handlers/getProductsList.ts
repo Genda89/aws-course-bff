@@ -1,12 +1,11 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { StatusCodes } from 'http-status-codes';
-import { mockProducts } from 'mocks/products.mock';
+import mockProducts from 'database/mocks/products.mock.json';
 import { ErrorResponse } from 'types/api.types';
-import { ProductList } from 'types/product.types';
 
 export const getProductsList: APIGatewayProxyHandler = async () => {
   try {
-    const products: ProductList = mockProducts;
+    const products = mockProducts;
 
     return {
       statusCode: 200,

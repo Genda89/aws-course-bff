@@ -1,18 +1,17 @@
-import { mockProducts } from 'mocks/products.mock';
 import { APIGatewayProxyEvent, APIGatewayProxyHandler } from 'aws-lambda';
-import { Product } from 'types/product.types';
 import { ErrorResponse } from 'types/api.types';
 import { StatusCodes } from 'http-status-codes';
+import mockedProductList from 'database/mocks/products.mock.json';
+import { ProductList } from '@interfaces/product.types';
 
 export const getProductById: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ) => {
   try {
+    const mockProducts: any = mockedProductList;
     const id = event.pathParameters?.id;
 
-    const product: Product | undefined = mockProducts.find(
-      (product) => product.id === id
-    );
+    const product = mockProducts.find((product: any) => product?.id === id);
 
     if (product) {
       return {
