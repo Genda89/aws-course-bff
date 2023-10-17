@@ -76,3 +76,13 @@ functions:
             schema:
               application/json: ${file(./schema/createProduct.json)}
               description: 'Validation model for Creating products'
+          responseData:
+            200:
+              description: Successful response
+              bodyType: PostProductSuccessResponse
+            400:
+              description: Product data is invalid
+              bodyType: ErrorResponse
+            500:
+              description: Something went wrong
+              bodyType: ErrorResponse
