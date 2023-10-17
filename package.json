@@ -20,15 +20,19 @@
   },
   "homepage": "https://github.com/Genda89/aws-course-bff#readme",
   "dependencies": {
+    "@jest/globals": "^29.7.0",
+    "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.1473.0",
     "dynamodb": "^1.3.0",
     "serverless": "^3.35.2",
+    "serverless-aws-documentation": "^1.1.0",
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.428.0",
     "@aws-sdk/lib-dynamodb": "^3.428.0",
     "@aws-sdk/util-dynamodb": "^3.428.0",
+    "@shelf/jest-dynamodb": "^3.4.2",
     "@types/aws-lambda": "^8.10.124",
     "@types/jest": "^29.5.5",
     "@types/node": "^20.8.6",

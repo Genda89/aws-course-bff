@@ -9,7 +9,7 @@
       "@interfaces/*": ["types/*"],
       "@functions": ["handlers/index.ts"],
       "@functions/*": ["handlers/*"],
-      "@mocks/*": ["database/mocks/*"],
+      "@mocks/*": ["database/mocks/*"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -21,5 +21,5 @@
   },
   "ts-node": {
     "esm": true
-}
+  }
 }
