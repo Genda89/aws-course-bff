@@ -7,7 +7,14 @@ provider:
   region: eu-west-1
   httpApi:
     cors: true
-
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: '*'
 plugins:
   - serverless-auto-swagger
   - serverless-webpack
@@ -19,7 +26,14 @@ custom:
     packager: 'npm'
     includeModules: true
   autoswagger:
-    typefiles: ['./types/product.types.ts', './types/api.types.ts']
+    typefiles:
+      [
+        './types/product.types.ts',
+        './types/api.types.ts',
+        './types/stock.types.ts',
+      ]
+  ProductsTable: products
+  StocksTable: stocks
 
 functions:
   getProductsList:
@@ -28,8 +42,6 @@ functions:
       - httpApi:
           path: /products
           method: get
-          cors:
-            origin: '*'
           responseData:
             200:
               description: Successful response
@@ -49,6 +61,27 @@ functions:
               bodyType: Product
             404:
               description: Product not found
+              bodyType: ErrorResponse
+            500:
+              description: Something went wrong
+              bodyType: ErrorResponse
+  createProduct:
+    handler: handlers/index.createProduct
+    events:
+      - httpApi:
+          path: /products
+          method: post
+          bodyType: ProductCreate
+          request:
+            schema:
+              application/json: ${file(./schema/createProduct.json)}
+              description: 'Validation model for Creating products'
+          responseData:
+            200:
+              description: Successful response
+              bodyType: PostProductSuccessResponse
+            400:
+              description: Product data is invalid
               bodyType: ErrorResponse
             500:
               description: Something went wrong

@@ -1,16 +1,50 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { StatusCodes } from 'http-status-codes';
-import { mockProducts } from 'mocks/products.mock';
+import { ScanCommand } from '@aws-sdk/client-dynamodb';
 import { ErrorResponse } from 'types/api.types';
-import { ProductList } from 'types/product.types';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { docClient } from './docClient';
 
 export const getProductsList: APIGatewayProxyHandler = async () => {
   try {
-    const products: ProductList = mockProducts;
+    const stocks: DocumentClient.ScanOutput = await docClient.send(
+      new ScanCommand({
+        TableName: 'stocks',
+        ConsistentRead: true,
+      })
+    );
+
+    const products: DocumentClient.ScanOutput = await docClient.send(
+      new ScanCommand({
+        TableName: 'products',
+        ConsistentRead: true,
+      })
+    );
+
+    if (!stocks.Items || !products.Items) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify([]),
+      };
+    }
+    const stockItems = stocks.Items.map((item) => unmarshall(item));
+
+    const result = products.Items.map((item) => {
+      const product = unmarshall(item);
+      const stocksInfo = stockItems.find(
+        (item) => item.product_id === product.id
+      );
+
+      return {
+        ...product,
+        count: stocksInfo ? stocksInfo.count : 0,
+      };
+    });
 
     return {
       statusCode: 200,
-      body: JSON.stringify(products),
+      body: JSON.stringify(result),
     };
   } catch (error: unknown) {
     let message = 'Something went wrong.';

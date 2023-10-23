@@ -1,6 +1,6 @@
 import { getProductsList } from '@functions';
 import { describe, expect, test } from '@jest/globals';
-import { mockProducts } from '@mocks/products.mock';
+import mockProducts from 'database/mocks/products.mock.json';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import AWSMockLambdaContext from 'aws-lambda-mock-context';
 

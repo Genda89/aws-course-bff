@@ -1,12 +1,16 @@
 # aws-course-bff
 
-## productList:
+## productList - GET
 
 https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/products
 
-## productById
+## productById - GET
 
 https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/products/{id}
+
+## createProduct - POST
+
+https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/products
 
 ## swagger-docs
 

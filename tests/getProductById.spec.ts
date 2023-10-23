@@ -1,5 +1,4 @@
 import { describe, expect, test } from '@jest/globals';
-import { mockProducts } from '@mocks/products.mock';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import AWSMockLambdaContext from 'aws-lambda-mock-context';
 import { StatusCodes } from 'http-status-codes';
@@ -10,7 +9,7 @@ describe('Test getProductById lambda', () => {
   test('Successfully returns product by id', async () => {
     const event = {
       pathParameters: {
-        id: mockProducts[0].id,
+        id: 'mock002',
       } as unknown,
     } as APIGatewayProxyEvent;
 

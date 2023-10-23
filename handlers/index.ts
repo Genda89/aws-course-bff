@@ -1,4 +1,5 @@
 import { getProductsList } from './getProductsList';
 import { getProductById } from './getProductById';
+import { createProduct } from './createProduct';
 
-export { getProductsList, getProductById };
+export { getProductsList, getProductById, createProduct };

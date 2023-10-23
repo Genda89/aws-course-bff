@@ -32,6 +32,33 @@
             }
           }
         }
+      },
+      "post": {
+        "summary": "createProduct",
+        "description": "",
+        "operationId": "createProduct.post./products",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Body required in the request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProductCreate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 response"
+          }
+        }
       }
     },
     "/products/{id}": {
@@ -94,21 +121,59 @@
         "price": {
           "title": "Product.price",
           "type": "number"
-        },
-        "count": {
-          "title": "Product.count",
-          "type": "number"
         }
       },
       "required": [
         "id",
         "title",
         "description",
+        "price"
+      ],
+      "additionalProperties": false,
+      "title": "Product",
+      "type": "object"
+    },
+    "ProductCreate": {
+      "properties": {
+        "title": {
+          "title": "ProductCreate.title",
+          "type": "string"
+        },
+        "description": {
+          "title": "ProductCreate.description",
+          "type": "string"
+        },
+        "price": {
+          "title": "ProductCreate.price",
+          "type": "number"
+        },
+        "count": {
+          "title": "ProductCreate.count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "title",
+        "description",
         "price",
         "count"
       ],
       "additionalProperties": false,
-      "title": "Product",
+      "title": "ProductCreate",
+      "type": "object"
+    },
+    "PostProductSuccessResponse": {
+      "properties": {
+        "id": {
+          "title": "PostProductSuccessResponse.id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false,
+      "title": "PostProductSuccessResponse",
       "type": "object"
     },
     "ProductList": {
@@ -131,6 +196,25 @@
       ],
       "additionalProperties": false,
       "title": "ErrorResponse",
+      "type": "object"
+    },
+    "Stock": {
+      "properties": {
+        "product_id": {
+          "title": "Stock.product_id",
+          "type": "string"
+        },
+        "count": {
+          "title": "Stock.count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "product_id",
+        "count"
+      ],
+      "additionalProperties": false,
+      "title": "Stock",
       "type": "object"
     }
   },
