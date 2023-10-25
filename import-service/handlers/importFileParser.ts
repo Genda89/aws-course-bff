@@ -1,66 +1,87 @@
 import { S3 } from 'aws-sdk';
-import { S3Event } from 'aws-lambda';
+import csvParser from 'csv-parser';
+import { APIGatewayProxyResult, S3Event, S3EventRecord } from 'aws-lambda';
 import { StatusCodes } from 'http-status-codes';
-import { successfulResponse } from 'utils/responses';
-import csv from 'csv-parser';
+import { errorResponse, successfulResponse } from 'utils/responses';
 
-const s3 = new S3({ region: 'eu-west-1' });
+const s3 = new S3({ region: process.env.REGION });
 
-export const importFileParser = async (event: S3Event) => {
-  const results: any[] = [];
-  let statusCode = 500;
-  let resMessage = 'Somethins went wrong in importFileParser lambda.';
-  const bucket = event.Records[0].s3.bucket.name;
-  const keyUploaded = decodeURIComponent(
-    event.Records[0].s3.object.key.replace(/\+/g, ' ')
-  );
+const processRecord = (record: S3EventRecord) => {
+  console.log('Processing record:', record);
+};
 
-  const paramsUploaded = {
-    Bucket: bucket,
-    Key: keyUploaded,
-  };
+const processEnd = () => console.log('Stream has ended');
+const processError = (error: Error) =>
+  console.log(`Error happened in csvParser: ${error}`);
 
-  const paramsParsed = {
-    Bucket: bucket,
-    CopySource: `${bucket}/${keyUploaded}`,
-    Key: paramsUploaded.Key.replace('uploaded', 'parsed'),
-  };
-
-  console.log(paramsUploaded, paramsParsed, event.Records[0].s3.object.key);
-
-  const objectStream = s3.getObject(paramsUploaded).createReadStream();
-
+const getProductsFromCSV = async (
+  s3: S3,
+  params: S3.Types.GetObjectRequest
+) => {
   try {
-    await objectStream
-      .pipe(csv())
-      .on('data', (data: any) => {
-        console.log('chunk data after csv(): ', data);
-        results.push(data);
-      })
-      .on('end', () => {
-        statusCode = 200;
-        resMessage = 'File read OK';
-        console.log('results: ', results);
-      })
-      .on('error', (error: any) => {
-        console.error(error);
-        statusCode = 500;
-        resMessage = 'Something went wrong inside S3 Readable Stream';
-      });
-    await s3.copyObject(paramsParsed).promise();
-    await s3.deleteObject(paramsUploaded).promise();
-  } catch (err) {
-    console.error(err);
-    statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-    resMessage = `Error getting object ${keyUploaded} from bucket ${bucket}.`;
-    throw new Error(resMessage);
-  }
+    const s3Stream = s3.getObject(params).createReadStream();
 
-  return successfulResponse(
-    JSON.stringify({
-      resMessage,
-      results,
-    }),
-    statusCode
-  );
+    return s3Stream
+      .pipe(csvParser())
+      .on('data', processRecord)
+      .on('end', processEnd)
+      .on('error', processError);
+  } catch (error) {
+    throw new Error(`Error happened in getProductsFromCSV: ${error}`);
+  }
+};
+
+const moveParsedFiles = async (
+  s3: S3,
+  params: S3.Types.GetObjectRequest
+): Promise<void> => {
+  try {
+    await s3
+      .copyObject({
+        Bucket: params.Bucket,
+        CopySource: `${params.Bucket}/${params.Key}`,
+        Key: params.Key.replace('uploaded', 'parsed'),
+      })
+      .promise();
+
+    await s3
+      .deleteObject({
+        Bucket: params.Bucket,
+        Key: params.Key,
+      })
+      .promise();
+  } catch (error) {
+    throw new Error(`Error happened in moveParsedFiles: ${error}`);
+  }
+};
+
+export const importFileParser = async (
+  event: S3Event
+): Promise<APIGatewayProxyResult> => {
+  try {
+    const record: S3EventRecord = event.Records?.[0];
+
+    const params = {
+      Bucket: record.s3.bucket.name,
+      Key: record.s3.object.key,
+    };
+
+    const products = await getProductsFromCSV(s3, params);
+
+    if (!products) {
+      return errorResponse(
+        { message: 'Could not get csvParsed file', name: 'NotFoundError' },
+        StatusCodes.NOT_FOUND
+      );
+    }
+
+    await moveParsedFiles(s3, params);
+
+    console.log('Products File processed successfully');
+
+    return successfulResponse(JSON.stringify(products));
+  } catch (error) {
+    console.error('Error in importFileParser', error);
+    return errorResponse({ message: '', name: 'InternalServerError' });
+  }
 };

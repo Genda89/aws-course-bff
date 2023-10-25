@@ -26,11 +26,7 @@ async function importProductsFileHandler(
   };
   const signedURL = await s3.getSignedUrlPromise('putObject', paramsUploaded);
 
-  return successfulResponse(
-    JSON.stringify({
-      url: signedURL,
-    })
-  );
+  return successfulResponse(signedURL);
 }
 
 export default importProductsFileHandler;
