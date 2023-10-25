@@ -43,11 +43,29 @@
         "body": {
           "title": "ServerResponse.body",
           "type": "string"
+        },
+        "headers": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "title": "ServerResponse.headers",
+          "type": "object"
         }
       },
       "required": [
         "statusCode",
-        "body"
+        "body",
+        "headers"
       ],
       "additionalProperties": false,
       "title": "ServerResponse",

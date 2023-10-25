@@ -23,7 +23,7 @@ export const importFileParser = async (event: S3Event) => {
   const paramsParsed = {
     Bucket: bucket,
     CopySource: `${bucket}/${keyUploaded}`,
-    Key: keyUploaded.split('uploaded').join('parsed'),
+    Key: paramsUploaded.Key.replace('uploaded', 'parsed'),
   };
 
   console.log(paramsUploaded, paramsParsed, event.Records[0].s3.object.key);
@@ -47,8 +47,8 @@ export const importFileParser = async (event: S3Event) => {
         statusCode = 500;
         resMessage = 'Something went wrong inside S3 Readable Stream';
       });
-    await s3.copyObject(paramsParsed);
-    await s3.deleteObject(paramsUploaded);
+    await s3.copyObject(paramsParsed).promise();
+    await s3.deleteObject(paramsUploaded).promise();
   } catch (err) {
     console.error(err);
     statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
