@@ -1,4 +1,2 @@
-import importProductsFile from './importProductsFile';
-import { importFileParser } from './importFileParser';
-
-export { importFileParser, importProductsFile };
+export { importProductsFile } from './importProductsFile';
+export { importFileParser } from './importFileParser';

@@ -6,9 +6,9 @@ import { StatusCodes } from 'http-status-codes';
 const BUCKET = 'aws-course-bff-uploaded';
 const s3 = new S3({ region: 'eu-west-1' });
 
-async function importProductsFileHandler(
+export const importProductsFile = async (
   event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> {
+): Promise<APIGatewayProxyResult> => {
   const fileName = event.queryStringParameters?.name;
 
   if (!fileName) {
@@ -27,6 +27,4 @@ async function importProductsFileHandler(
   const signedURL = await s3.getSignedUrlPromise('putObject', paramsUploaded);
 
   return successfulResponse(signedURL);
-}
-
-export default importProductsFileHandler;
+};
