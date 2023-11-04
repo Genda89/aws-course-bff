@@ -7,6 +7,7 @@ provider:
   region: eu-west-1
   environment:
     BUCKET: aws-course-bff-uploaded
+    SQS_URL: ${env:SQS_URL}
   iamRoleStatements:
     - Effect: Allow
       Action: s3:ListBucket
@@ -19,11 +20,16 @@ provider:
         - s3:PutObjectTagging
         - s3:DeleteObject
       Resource: arn:aws:s3:::${self:provider.environment.BUCKET}/*
+    - Effect: 'Allow'
+      Action: 'sqs:*'
+      Resource:
+        - 'arn:aws:sqs:eu-west-1:503517931648:catalogItemsQueue'
 
 plugins:
   - serverless-auto-swagger
   - serverless-webpack
   - serverless-offline
+  - serverless-dotenv-plugin
 
 custom:
   webpack:

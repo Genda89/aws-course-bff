@@ -1,5 +1,5 @@
 import { getProductsList } from './getProductsList';
-import { getProductById } from './getProductById';
 import { createProduct } from './createProduct';
-
-export { getProductsList, getProductById, createProduct };
+import { catalogBatchProcess } from './catalogBatchProcess';
+import { getProductById } from './getProductById';
+export { getProductsList, getProductById, createProduct, catalogBatchProcess };

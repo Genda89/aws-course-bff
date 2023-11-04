@@ -56,7 +56,22 @@
         ],
         "responses": {
           "200": {
-            "description": "200 response"
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/PostProductSuccessResponse"
+            }
+          },
+          "400": {
+            "description": "Product data is invalid",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
