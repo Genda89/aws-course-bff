@@ -1,0 +1,59 @@
+service: import-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-1
+  environment:
+    BUCKET: aws-course-bff-uploaded
+  iamRoleStatements:
+    - Effect: Allow
+      Action: s3:ListBucket
+      Resource: arn:aws:s3:::${self:provider.environment.BUCKET}
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:GetObjectTagging
+        - s3:PutObject
+        - s3:PutObjectTagging
+        - s3:DeleteObject
+      Resource: arn:aws:s3:::${self:provider.environment.BUCKET}/*
+
+plugins:
+  - serverless-auto-swagger
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  webpack:
+    webpackConfig: 'webpack.config.js'
+    packager: 'npm'
+    includeModules: true
+  autoswagger:
+    typefiles: ['./types/api.type.ts']
+  serverless-offline:
+    httpPort: 3001
+
+functions:
+  importProductsFile:
+    handler: handlers/index.importProductsFile
+    events:
+      - http:
+          path: /import
+          method: get
+          request:
+            parameters:
+              querystrings:
+                name: true
+          cors: true
+  importFileParser:
+    handler: handlers/index.importFileParser
+    events:
+      - s3:
+        bucket: ${self:provider.environment.BUCKET}
+        event: s3:ObjectCreated:*
+        rules:
+          - prefix: uploaded/
+          - suffix: .csv
+        existing: true
