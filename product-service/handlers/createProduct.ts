@@ -1,44 +1,56 @@
-import { PutCommand } from '@aws-sdk/lib-dynamodb';
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyHandler } from 'aws-lambda';
 import { StatusCodes } from 'http-status-codes';
-import { v4 as uuid } from 'uuid';
-import { docClient } from './docClient';
 import { ErrorResponse } from '@interfaces/api.types';
+import { ProductService } from '@services/product-service';
+import {
+  BASIC_ERROR_MESSAGE,
+  PRODUCT_CREATED_ERROR_MESSAGE,
+  PRODUCT_CREATED_SUCCESS_MESSAGE,
+} from 'constants/messages';
+import { CreateProductSchema } from 'schema/product-schema';
 
-export async function createProduct(event: APIGatewayProxyEvent) {
+export const createProduct: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent
+) => {
+  const productsService = new ProductService();
   try {
-    const newProduct = event.body && JSON.parse(event.body);
-    const { title, description, price, count } = newProduct;
-    const id = uuid();
-    const productCommand = new PutCommand({
-      TableName: 'products',
-      Item: {
-        id,
-        title,
-        description,
-        price,
-      },
-    });
+    console.log('Lambda function createProduct request', JSON.stringify(event));
 
-    const stockCommand = new PutCommand({
-      TableName: 'stocks',
-      Item: {
-        product_id: id,
-        count,
-      },
-    });
+    const parsedBody = JSON.parse(event.body || '{}');
 
-    await docClient.send(productCommand);
-    await docClient.send(stockCommand);
+    const validationResult = CreateProductSchema.validate(parsedBody);
+
+    if (!validationResult.value) {
+      const errorResponse: ErrorResponse = {
+        message: 'Product data is invalid',
+      };
+
+      return {
+        statusCode: StatusCodes.BAD_REQUEST,
+        body: JSON.stringify(errorResponse),
+      };
+    }
+
+    const productId = await productsService.createProduct(
+      validationResult.value
+    );
+
+    if (!productId) {
+      return {
+        statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+        body: PRODUCT_CREATED_ERROR_MESSAGE,
+      };
+    }
 
     return {
       statusCode: StatusCodes.CREATED,
       body: JSON.stringify({
-        id,
+        message: PRODUCT_CREATED_SUCCESS_MESSAGE,
+        productId,
       }),
     };
-  } catch (error) {
-    let message = 'Internal error with wrtiting to DB';
+  } catch (error: unknown) {
+    let message = BASIC_ERROR_MESSAGE;
 
     if (error instanceof Error) {
       message = error.message;
@@ -50,4 +62,4 @@ export async function createProduct(event: APIGatewayProxyEvent) {
       body: JSON.stringify(errorResponse),
     };
   }
-}
+};
