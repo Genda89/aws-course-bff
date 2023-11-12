@@ -9,7 +9,9 @@
       "@interfaces/*": ["types/*"],
       "@functions": ["handlers/index.ts"],
       "@functions/*": ["handlers/*"],
-      "@mocks/*": ["database/mocks/*"]
+      "@mocks/*": ["database/mocks/*"],
+      "@utils/*": ["utils/*"],
+      "@services/*": ["services/*"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true,
