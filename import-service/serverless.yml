@@ -10,6 +10,7 @@ provider:
   environment:
     BUCKET: aws-course-bff-uploaded
     SQS_URL: ${env:SQS_URL}
+    BASIC_AUTHORIZER_ARN: ${env:AWS_BASIC_AUTHORIZER_ARN}
   iamRoleStatements:
     - Effect: Allow
       Action: s3:ListBucket
@@ -55,6 +56,12 @@ functions:
               querystrings:
                 name: true
           cors: true
+          authorizer:
+            name: basicAuthorizer
+            type: token
+            identitySource: method.request.header.Authorization
+            arn: ${self:provider.environment.BASIC_AUTHORIZER_ARN}
+            resultTtlInSeconds: 0
   importFileParser:
     handler: handlers/index.importFileParser
     events:
@@ -65,3 +72,15 @@ functions:
           - prefix: uploaded/
           - suffix: .csv
         existing: true
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'

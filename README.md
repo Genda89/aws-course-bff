@@ -23,3 +23,7 @@ https://a8f4ltzpd3.execute-api.eu-west-1.amazonaws.com/swagger
 ## swagger template
 
 https://a8f4ltzpd3.execute-api.eu-west-1.amazonaws.com/swagger.json
+
+## swagger auth
+
+https://67spcharzd.execute-api.eu-west-1.amazonaws.com/swagger
