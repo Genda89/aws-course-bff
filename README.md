@@ -1,21 +1,29 @@
 # aws-course-bff
 
+## parser - GET
+
+https://7b38526d3a.execute-api.eu-west-1.amazonaws.com/dev/import
+
 ## productList - GET
 
-https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/products
+https://a8f4ltzpd3.execute-api.eu-west-1.amazonaws.com/products
 
 ## productById - GET
 
-https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/products/{id}
+https://a8f4ltzpd3.execute-api.eu-west-1.amazonaws.com/products/{id}
 
 ## createProduct - POST
 
-https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/products
+https://a8f4ltzpd3.execute-api.eu-west-1.amazonaws.com/products
 
 ## swagger-docs
 
-https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/swagger
+https://a8f4ltzpd3.execute-api.eu-west-1.amazonaws.com/swagger
 
 ## swagger template
 
-https://97jrjiuin0.execute-api.eu-west-1.amazonaws.com/swagger.json
+https://a8f4ltzpd3.execute-api.eu-west-1.amazonaws.com/swagger.json
+
+## swagger auth
+
+https://67spcharzd.execute-api.eu-west-1.amazonaws.com/swagger

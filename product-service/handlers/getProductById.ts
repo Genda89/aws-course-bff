@@ -1,70 +1,57 @@
-import { APIGatewayProxyEvent, APIGatewayProxyHandler } from 'aws-lambda';
-import { ErrorResponse } from 'types/api.types';
+import { APIGatewayProxyHandler } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda/trigger/api-gateway-proxy';
+
+import { ErrorResponse } from '@interfaces/api.types';
 import { StatusCodes } from 'http-status-codes';
-import { ScanCommand } from '@aws-sdk/client-dynamodb';
-import { unmarshall } from '@aws-sdk/util-dynamodb';
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { docClient } from './docClient';
+import {
+  BASIC_ERROR_MESSAGE,
+  GET_PRODUCT_BY_ID_ERROR_MESSAGE,
+  getMissingProductIdErrorMessage,
+} from 'constants/messages';
+import { ProductService } from '@services/product-service';
 
 export const getProductById: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ) => {
+  const productsService = new ProductService();
   try {
-    const id = event.pathParameters?.id;
-
-    const stocks: DocumentClient.ScanOutput = await docClient.send(
-      new ScanCommand({
-        TableName: 'stocks',
-        ConsistentRead: true,
-      })
+    console.log(
+      'Lambda function getProductById request',
+      JSON.stringify(event)
     );
 
-    const products: DocumentClient.ScanOutput = await docClient.send(
-      new ScanCommand({
-        TableName: 'products',
-        ConsistentRead: true,
-      })
-    );
+    const productId = event.pathParameters?.productId;
 
-    if (!stocks.Items || !products.Items) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify([]),
+    if (!productId) {
+      const errorResPonse: ErrorResponse = {
+        message: GET_PRODUCT_BY_ID_ERROR_MESSAGE,
       };
-    }
-    const stockItems = stocks.Items.map((item) => unmarshall(item));
-
-    const result = products.Items.map((item) => {
-      const product = unmarshall(item);
-      const stocksInfo = stockItems.find(
-        (item) => item.product_id === product.id
-      );
 
       return {
-        ...product,
-        count: stocksInfo ? stocksInfo.count : 0,
-      };
-    });
-
-    const product = result.find((product: any) => product?.id === id);
-
-    if (product) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify(product),
+        statusCode: StatusCodes.NOT_FOUND,
+        body: JSON.stringify(errorResPonse),
       };
     }
 
-    const errorResPonse: ErrorResponse = {
-      message: `Product with id:${id} not found.`,
-    };
+    const product = productsService.getProductById(productId);
+
+    if (!product) {
+      const errorResPonse: ErrorResponse = {
+        message: getMissingProductIdErrorMessage(productId),
+      };
+
+      return {
+        statusCode: StatusCodes.NOT_FOUND,
+        body: JSON.stringify(errorResPonse),
+      };
+    }
 
     return {
-      statusCode: StatusCodes.NOT_FOUND,
-      body: JSON.stringify(errorResPonse),
+      statusCode: 200,
+      body: JSON.stringify(product),
     };
   } catch (error: unknown) {
-    let message = 'Something went wrong.';
+    let message = BASIC_ERROR_MESSAGE;
 
     if (error instanceof Error) {
       message = error.message;
@@ -72,7 +59,7 @@ export const getProductById: APIGatewayProxyHandler = async (
 
     const errorResponse: ErrorResponse = { message };
     return {
-      statusCode: StatusCodes.BAD_REQUEST,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       body: JSON.stringify(errorResponse),
     };
   }
